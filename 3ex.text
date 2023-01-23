@@ -1,0 +1,357 @@
+user@zhokee-inspiron:~$ sudo -u postgres psql
+[sudo] пароль для user: 
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ my_user   | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(5 rows)
+
+postgres=# \c zhokee
+You are now connected to database "zhokee" as user "postgres".
+zhokee=# CREATE TABLE category(
+zhokee(# id serial primary key,
+zhokee(# name varchar(50);
+zhokee(# );
+ERROR:  syntax error at or near ";"
+LINE 3: name varchar(50);
+                        ^
+zhokee=# CREATE TABLE category(
+id serial primary key,
+name varchar(50));
+CREATE TABLE
+zhokee=# 
+zhokee=# CREATE TABLE product(
+zhokee(# id serial primary key,
+zhokee(# title text,
+zhokee(# price decimal,
+zhokee(# category_id int,
+zhokee(# FOREIGN KEY (category_id) REFERENCES category(id));
+CREATE TABLE
+zhokee=# 
+zhokee=# 
+zhokee=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | category | table | postgres
+ public | person2  | table | postgres
+ public | product  | table | postgres
+(3 rows)
+
+zhokee=# \d category
+                                   Table "public.category"
+ Column |         Type          | Collation | Nullable |               Default                
+--------+-----------------------+-----------+----------+--------------------------------------
+ id     | integer               |           | not null | nextval('category_id_seq'::regclass)
+ name   | character varying(50) |           |          | 
+Indexes:
+    "category_pkey" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "product" CONSTRAINT "product_category_id_fkey" FOREIGN KEY (category_id) REFERENCES category(id)
+
+zhokee=# \d protuct
+Did not find any relation named "protuct".
+zhokee=# \d product
+                               Table "public.product"
+   Column    |  Type   | Collation | Nullable |               Default               
+-------------+---------+-----------+----------+-------------------------------------
+ id          | integer |           | not null | nextval('product_id_seq'::regclass)
+ title       | text    |           |          | 
+ price       | numeric |           |          | 
+ category_id | integer |           |          | 
+Indexes:
+    "product_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "product_category_id_fkey" FOREIGN KEY (category_id) REFERENCES category(id)
+
+zhokee=# INSERT INTO product(title, price) VALUES('кружка', 20);
+INSERT 0 1
+zhokee=# 
+zhokee=# \d product
+                               Table "public.product"
+   Column    |  Type   | Collation | Nullable |               Default               
+-------------+---------+-----------+----------+-------------------------------------
+ id          | integer |           | not null | nextval('product_id_seq'::regclass)
+ title       | text    |           |          | 
+ price       | numeric |           |          | 
+ category_id | integer |           |          | 
+Indexes:
+    "product_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "product_category_id_fkey" FOREIGN KEY (category_id) REFERENCES category(id)
+
+zhokee=# SELECT * FROM product;
+ id | title  | price | category_id 
+----+--------+-------+-------------
+  1 | кружка |    20 |            
+(1 row)
+
+zhokee=# ISERT INTO CATEGORY(name) VALUES('game');
+ERROR:  syntax error at or near "ISERT"
+LINE 1: ISERT INTO CATEGORY(name) VALUES('game');
+        ^
+zhokee=# INSERT INTO CATEGORY(name) VALUES('game');
+INSERT 0 1
+zhokee=# INSERT INTO CATEGORY(name) VALUES('for home');
+INSERT 0 1
+zhokee=# INSERT INTO CATEGORY(name) VALUES('for food');
+INSERT 0 1
+zhokee=# INSERT INTO CATEGORY(name) VALUES('for food') ('sold');
+ERROR:  syntax error at or near "("
+LINE 1: INSERT INTO CATEGORY(name) VALUES('for food') ('sold');
+                                                      ^
+zhokee=# INSERT INTO product(title, price, category_id) VALUES('кружка3', 20, 2);
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, category_id) VALUES('кружка4', 20, 2);
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, category_id) VALUES('кружка4', 20, 20);
+ERROR:  insert or update on table "product" violates foreign key constraint "product_category_id_fkey"
+DETAIL:  Key (category_id)=(20) is not present in table "category".
+zhokee=# SELECT * FROM product;
+ id |  title  | price | category_id 
+----+---------+-------+-------------
+  1 | кружка  |    20 |            
+  2 | кружка3 |    20 |           2
+  3 | кружка4 |    20 |           2
+(3 rows)
+
+zhokee=# SELECT product.title, category.name from product join category on product.category_id = category.id;
+  title  |   name   
+---------+----------
+ кружка3 | for home
+ кружка4 | for home
+(2 rows)
+
+zhokee=# SELECT * FROM product;
+ id |  title  | price | category_id 
+----+---------+-------+-------------
+  1 | кружка  |    20 |            
+  2 | кружка3 |    20 |           2
+  3 | кружка4 |    20 |           2
+(3 rows)
+
+zhokee=# SELECT p.name, p.price, c.name FROM product as p join category as c on p.category_id = c.id; 
+ERROR:  column p.name does not exist
+LINE 1: SELECT p.name, p.price, c.name FROM product as p join catego...
+               ^
+HINT:  Perhaps you meant to reference the column "c.name".
+zhokee=# SELECT p.title, p.price, c.name FROM product as p join category as c on p.category_id = c.id; 
+  title  | price |   name   
+---------+-------+----------
+ кружка3 |    20 | for home
+ кружка4 |    20 | for home
+(2 rows)
+
+zhokee=# SELECT p.title, p.price, c.name FROM product as p inner join category as c on p.category_id = c.id; 
+  title  | price |   name   
+---------+-------+----------
+ кружка3 |    20 | for home
+ кружка4 |    20 | for home
+(2 rows)
+
+zhokee=# SELECT p.title, p.price, c.name FROM product as p left join category as c on p.category_id = c.id; 
+  title  | price |   name   
+---------+-------+----------
+ кружка  |    20 | 
+ кружка3 |    20 | for home
+ кружка4 |    20 | for home
+(3 rows)
+
+zhokee=# SELECT p.title, p.price, c.name FROM product as p right join category as c on p.category_id = c.id; 
+  title  | price |   name   
+---------+-------+----------
+ кружка3 |    20 | for home
+ кружка4 |    20 | for home
+         |       | game
+         |       | for food
+(4 rows)
+
+zhokee=# SELECT p.title, p.price, c.name FROM product as p full join category as c on p.category_id = c.id; 
+  title  | price |   name   
+---------+-------+----------
+ кружка  |    20 | 
+ кружка3 |    20 | for home
+ кружка4 |    20 | for home
+         |       | game
+         |       | for food
+(5 rows)
+
+zhokee=# CREATE TABLE person(
+zhokee(# id serial primary key,
+zhokee(# name varchar(50),
+zhokee(# age smallint
+zhokee(# );
+CREATE TABLE
+zhokee=# CREATE TABLE password(
+zhokee(# id serial primary key,
+zhokee(# pin int not null,
+zhokee(# person_id int unique REFERENCES person(id)
+zhokee(# );
+CREATE TABLE
+zhokee=# 
+zhokee=# 
+zhokee=# INSERT INTO person(name, age) VALUES('John', 22);
+INSERT 0 1
+zhokee=# INSERT INTO person(name, age) VALUES('Sam', 22);
+INSERT 0 1
+zhokee=# INSERT INTO person(name, age) VALUES('Martin', 22);
+INSERT 0 1
+zhokee=# SELECT * from person;
+ id |  name  | age 
+----+--------+-----
+  1 | John   |  22
+  2 | Sam    |  22
+  3 | Martin |  22
+(3 rows)
+
+zhokee=# SELECT * from password;
+ id | pin | person_id 
+----+-----+-----------
+(0 rows)
+
+zhokee=# INSERT INTO password(pin, person_id) VALUES(2356547);
+ERROR:  INSERT has more target columns than expressions
+LINE 1: INSERT INTO password(pin, person_id) VALUES(2356547);
+                                  ^
+zhokee=# INSERT INTO password(pin, person_id) VALUES(2356547, 2);
+INSERT 0 1
+zhokee=# INSERT INTO password(pin, person_id) VALUES(235643, 2);
+ERROR:  duplicate key value violates unique constraint "password_person_id_key"
+DETAIL:  Key (person_id)=(2) already exists.
+zhokee=# INSERT INTO password(pin, person_id) VALUES(2234643, 2);
+ERROR:  duplicate key value violates unique constraint "password_person_id_key"
+DETAIL:  Key (person_id)=(2) already exists.
+zhokee=# SELECT * from person;
+ id |  name  | age 
+----+--------+-----
+  1 | John   |  22
+  2 | Sam    |  22
+  3 | Martin |  22
+(3 rows)
+
+zhokee=# SELECT * from password;
+ id |   pin   | person_id 
+----+---------+-----------
+  1 | 2356547 |         2
+(1 row)
+
+zhokee=# INSERT INTO password(pin, person_id) VALUES(2234643, 1);
+INSERT 0 1
+zhokee=# SELECT * from password;
+ id |   pin   | person_id 
+----+---------+-----------
+  1 | 2356547 |         2
+  4 | 2234643 |         1
+(2 rows)
+
+zhokee=# SELECT * FROM person JOIN PASSWORD ON person.id = password.person_id; 
+ id | name | age | id |   pin   | person_id 
+----+------+-----+----+---------+-----------
+  2 | Sam  |  22 |  1 | 2356547 |         2
+  1 | John |  22 |  4 | 2234643 |         1
+(2 rows)
+
+zhokee=# SELECT person.id, person.name, person.age, password.pin FROM person JOIN password ON person.id = password.person_id;
+ id | name | age |   pin   
+----+------+-----+---------
+  2 | Sam  |  22 | 2356547
+  1 | John |  22 | 2234643
+(2 rows)
+
+zhokee=# CREATE TABLE teacher(id serial primary key,
+zhokee(# name text
+zhokee(# );
+CREATE TABLE
+zhokee=# CREATE TABLE student(id serial primary key,
+name text
+);
+CREATE TABLE
+zhokee=# 
+zhokee=# CREATE TABLE t_s(
+zhokee(# id serial primary key,
+zhokee(# student_id int REFERENCES student(id) on delete CASCADE,
+zhokee(# teacher_id int REFERENCES teacher(id) ON DELETE CASCADE
+zhokee(# );
+CREATE TABLE
+zhokee=# 
+zhokee=# INSERT INTO student(name) VALUES ('s1'), ('s2'), ('s3');
+INSERT 0 3
+zhokee=# INSERT INTO teacher(name) VALUES ('t1'), ('t2'), ('t3');
+INSERT 0 3
+zhokee=# SELECT * FROM t_s;
+ id | student_id | teacher_id 
+----+------------+------------
+(0 rows)
+
+zhokee=# SELECT * FROM student;
+ id | name 
+----+------
+  1 | s1
+  2 | s2
+  3 | s3
+(3 rows)
+
+zhokee=# SELECT * FROM teacher;
+ id | name 
+----+------
+  1 | t1
+  2 | t2
+  3 | t3
+(3 rows)
+
+zhokee=# INSERT INTO t_s(student_id, teacher_id) VALUES (1, 1);
+INSERT 0 1
+zhokee=# INSERT INTO t_s(student_id, teacher_id) VALUES (2, 1);
+INSERT 0 1
+zhokee=# INSERT INTO t_s(student_id, teacher_id) VALUES (3, 1);
+INSERT 0 1
+zhokee=# INSERT INTO t_s(student_id, teacher_id) VALUES (1, 3);
+INSERT 0 1
+zhokee=# INSERT INTO t_s(student_id, teacher_id) VALUES (3, 3);
+INSERT 0 1
+zhokee=# INSERT INTO t_s(student_id, teacher_id) VALUES (3, 2);
+INSERT 0 1
+zhokee=# INSERT INTO t_s(student_id, teacher_id) VALUES (3, 1);
+INSERT 0 1
+zhokee=# 
+zhokee=# SELECT * FROM t_s;
+ id | student_id | teacher_id 
+----+------------+------------
+  1 |          1 |          1
+  2 |          2 |          1
+  3 |          3 |          1
+  4 |          1 |          3
+  5 |          3 |          3
+  6 |          3 |          2
+  7 |          3 |          1
+(7 rows)
+
+zhokee=# SELECT t_s.id, student.name, teacher.name FROM t_s JOIN student ON student.id = t_s.student_id JOIN teacher ON teacher ON teacher.id = t_s.teacher_id;
+ERROR:  syntax error at or near "ON"
+LINE 1: ...udent.id = t_s.student_id JOIN teacher ON teacher ON teacher...
+                                                             ^
+zhokee=# SELECT t_s.id, student.name, teacher.name FROM t_s JOIN student ON student.id = t_s.student_id JOIN teacher ON teacher.id = t_s.teacher_id;
+ id | name | name 
+----+------+------
+  1 | s1   | t1
+  2 | s2   | t1
+  3 | s3   | t1
+  4 | s1   | t3
+  5 | s3   | t3
+  6 | s3   | t2
+  7 | s3   | t1
+(7 rows)
+
+zhokee=# 

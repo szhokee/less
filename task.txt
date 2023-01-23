@@ -1,0 +1,71 @@
+PostgreSQL. Task 1
+Найдите 10 самых часто встречающихся слов из таблицы wordform. Ожидаемый вывод:
+
+plaintext    
+-----------   
+the    
+and    
+i    
+to    
+of    
+a    
+you    
+...   
+(10 rows)  
+!!!
+select plaintext from wordform plaintext limit 10;
+
+PostgreSQL. Таск 2
+Найдите все слова, которые начинаются с буквы a(таблица wordform),
+
+регистр не должен иметь значения.
+
+Ожидаемый вывод:
+
+
+plaintext       
+-------------------   
+and   
+a   
+as   
+all   
+are   
+at   
+am   
+...  
+(1569 rows) 
+!!!
+select plaintext from wordform where plaintext ilike 'a%';
+
+PostgreSQL. Таск 4
+Найдите среднее количество параграфов в произведениях жанра t (таблица work).
+
+Ожидаемый вывод:
+
+
+avg      
+---------------------- 
+1070.8181818181818182  
+(1 row) 
+!!!
+SELECT  avg(totalparagraphs) from work where genretype = 't';
+
+PostgreSQL. Таск 5
+Выведите названия всех произведений из таблицы work, в которых количество слов выше среднего.
+
+Ожидаемый вывод:
+
+
+title             
+---------------------------   
+All's Well That Ends Well   
+Antony and Cleopatra   
+As You Like It   
+Coriolanus   
+Cymbeline   
+Hamlet   
+Henry IV, Part I   
+...  
+(28 rows) 
+!!!
+select title from work where totalwords > 20000;;

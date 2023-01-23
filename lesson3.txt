@@ -1,0 +1,644 @@
+user@zhokee-inspiron:~$ sudo -u postgres psql
+[sudo] пароль для user: 
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ my_user   | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(5 rows)
+
+postgres=# \dt
+           List of relations
+ Schema |   Name    | Type  |  Owner   
+--------+-----------+-------+----------
+ public | customers | table | postgres
+ public | products  | table | postgres
+(2 rows)
+
+postgres=# c\ zhokee
+invalid command \
+Try \? for help.
+postgres-# ;
+ERROR:  syntax error at or near "c"
+LINE 1: c
+        ^
+postgres=# \dt
+           List of relations
+ Schema |   Name    | Type  |  Owner   
+--------+-----------+-------+----------
+ public | customers | table | postgres
+ public | products  | table | postgres
+(2 rows)
+
+postgres=# \dt public
+Did not find any relation named "public".
+postgres=# \d public
+Did not find any relation named "public".
+postgres=# \c zhokee
+You are now connected to database "zhokee" as user "postgres".
+zhokee=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | category | table | postgres
+ public | password | table | postgres
+ public | person   | table | postgres
+ public | person2  | table | postgres
+ public | product  | table | postgres
+ public | student  | table | postgres
+ public | t_s      | table | postgres
+ public | teacher  | table | postgres
+(8 rows)
+
+zhokee=# \d person
+                                    Table "public.person"
+ Column |         Type          | Collation | Nullable |               Default               
+--------+-----------------------+-----------+----------+-------------------------------------
+ id     | integer               |           | not null | nextval('person_id_seq1'::regclass)
+ name   | character varying(50) |           |          | 
+ age    | smallint              |           |          | 
+Indexes:
+    "person_pkey1" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "password" CONSTRAINT "password_person_id_fkey" FOREIGN KEY (person_id) REFERENCES person(id)
+
+zhokee=# SELECT * FROM product;
+ id |  title  | price | category_id 
+----+---------+-------+-------------
+  1 | кружка  |    20 |            
+  2 | кружка3 |    20 |           2
+  3 | кружка4 |    20 |           2
+(3 rows)
+
+zhokee=# SELECT * FROM category;
+ id |   name   
+----+----------
+  1 | game
+  2 | for home
+  3 | for food
+(3 rows)
+
+zhokee=# SELECT title, price, category_id FROM product;
+  title  | price | category_id 
+---------+-------+-------------
+ кружка  |    20 |            
+ кружка3 |    20 |           2
+ кружка4 |    20 |           2
+(3 rows)
+
+zhokee=# SELECT title, category_id FROM product;
+  title  | category_id 
+---------+-------------
+ кружка  |            
+ кружка3 |           2
+ кружка4 |           2
+(3 rows)
+
+zhokee=# SELECT product.title, category.name from product join category on product.category_id = category.id;
+  title  |   name   
+---------+----------
+ кружка3 | for home
+ кружка4 | for home
+(2 rows)
+
+zhokee=# SELECT product.title, category.name from product inner join category on product.category_id = category.id;
+  title  |   name   
+---------+----------
+ кружка3 | for home
+ кружка4 | for home
+(2 rows)
+
+zhokee=# SELECT product.title, category.name from product left join category on product.category_id = category.id;
+  title  |   name   
+---------+----------
+ кружка  | 
+ кружка3 | for home
+ кружка4 | for home
+(3 rows)
+
+zhokee=# SELECT product.title, category.name from product right join category on product.category_id = category.id;
+  title  |   name   
+---------+----------
+ кружка3 | for home
+ кружка4 | for home
+         | game
+         | for food
+(4 rows)
+
+zhokee=# SELECT product.title, category.name from product full join category on product.category_id = category.id;
+  title  |   name   
+---------+----------
+ кружка  | 
+ кружка3 | for home
+ кружка4 | for home
+         | game
+         | for food
+(5 rows)
+
+zhokee=# SELECT p.title, c.name from product as p join category as c on p.category_id = c.id;
+  title  |   name   
+---------+----------
+ кружка3 | for home
+ кружка4 | for home
+(2 rows)
+
+zhokee=# SELECT p.title, c.name, c.id from product as p join category as c on p.category_id = c.id;
+  title  |   name   | id 
+---------+----------+----
+ кружка3 | for home |  2
+ кружка4 | for home |  2
+(2 rows)
+
+zhokee=# 
+zhokee=# select * from student;
+ id | name 
+----+------
+  1 | s1
+  2 | s2
+  3 | s3
+(3 rows)
+
+zhokee=# select * from teacher;
+ id | name 
+----+------
+  1 | t1
+  2 | t2
+  3 | t3
+(3 rows)
+
+zhokee=# select * from t_s;
+ id | student_id | teacher_id 
+----+------------+------------
+  1 |          1 |          1
+  2 |          2 |          1
+  3 |          3 |          1
+  4 |          1 |          3
+  5 |          3 |          3
+  6 |          3 |          2
+  7 |          3 |          1
+(7 rows)
+
+zhokee=# SELECT ts.id, student.name, from t_s join student on t_s.student_id = student.id;
+ERROR:  syntax error at or near "from"
+LINE 1: SELECT ts.id, student.name, from t_s join student on t_s.stu...
+                                    ^
+zhokee=# SELECT ts.id, student.name from t_s join student on t_s.student_id = student.id;
+ERROR:  missing FROM-clause entry for table "ts"
+LINE 1: SELECT ts.id, student.name from t_s join student on t_s.stud...
+               ^
+zhokee=# SELECT t_s.id, student.name from t_s join student on t_s.student_id = student.id;
+ id | name 
+----+------
+  1 | s1
+  2 | s2
+  3 | s3
+  4 | s1
+  5 | s3
+  6 | s3
+  7 | s3
+(7 rows)
+
+zhokee=# select t_s.id, student.name, teacher.name from t_s join student on t_s.student_id = student.id join teacher on t_s.teacher_id = teacher.id;
+ id | name | name 
+----+------+------
+  1 | s1   | t1
+  2 | s2   | t1
+  3 | s3   | t1
+  4 | s1   | t3
+  5 | s3   | t3
+  6 | s3   | t2
+  7 | s3   | t1
+(7 rows)
+
+zhokee=# select * from t_s;
+ id | student_id | teacher_id 
+----+------------+------------
+  1 |          1 |          1
+  2 |          2 |          1
+  3 |          3 |          1
+  4 |          1 |          3
+  5 |          3 |          3
+  6 |          3 |          2
+  7 |          3 |          1
+(7 rows)
+
+zhokee=# delete from student where id = 1;
+DELETE 1
+zhokee=# select * from t_s;
+ id | student_id | teacher_id 
+----+------------+------------
+  2 |          2 |          1
+  3 |          3 |          1
+  5 |          3 |          3
+  6 |          3 |          2
+  7 |          3 |          1
+(5 rows)
+
+zhokee=# TRUNCATE student CASCADE;
+NOTICE:  truncate cascades to table "t_s"
+TRUNCATE TABLE
+zhokee=# select * from student;
+ id | name 
+----+------
+(0 rows)
+
+zhokee=# 
+zhokee=# \dt
+          List of relations
+ Schema |   Name   | Type  |  Owner   
+--------+----------+-------+----------
+ public | category | table | postgres
+ public | password | table | postgres
+ public | person   | table | postgres
+ public | person2  | table | postgres
+ public | product  | table | postgres
+ public | student  | table | postgres
+ public | t_s      | table | postgres
+ public | teacher  | table | postgres
+(8 rows)
+
+zhokee=# DROP TABLE student;
+ERROR:  cannot drop table student because other objects depend on it
+DETAIL:  constraint t_s_student_id_fkey on table t_s depends on table student
+HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+zhokee=# DROP TABLE t_s;
+DROP TABLE
+zhokee=# DROP TABLE student;
+DROP TABLE
+zhokee=# DROP TABLE teacher;
+DROP TABLE
+zhokee=# DROP TABLE product;
+DROP TABLE
+zhokee=# DROP TABLE category;
+DROP TABLE
+zhokee=# DROP TABLE password;
+DROP TABLE
+zhokee=# DROP TABLE person;
+DROP TABLE
+zhokee=# \dt
+          List of relations
+ Schema |  Name   | Type  |  Owner   
+--------+---------+-------+----------
+ public | person2 | table | postgres
+(1 row)
+
+zhokee=# CREATE TABLE animal(
+zhokee(# id serial primery key,
+zhokee(# name text,
+zhokee(# age int default 5
+zhokee(# );
+ERROR:  syntax error at or near "primery"
+LINE 2: id serial primery key,
+                  ^
+zhokee=# CREATE TABLE animal(
+id serial primary key,
+name text,
+age int default 5
+);
+CREATE TABLE
+zhokee=# \dt
+          List of relations
+ Schema |  Name   | Type  |  Owner   
+--------+---------+-------+----------
+ public | animal  | table | postgres
+ public | person2 | table | postgres
+(2 rows)
+
+zhokee=# \d animal
+                            Table "public.animal"
+ Column |  Type   | Collation | Nullable |              Default               
+--------+---------+-----------+----------+------------------------------------
+ id     | integer |           | not null | nextval('animal_id_seq'::regclass)
+ name   | text    |           |          | 
+ age    | integer |           |          | 5
+Indexes:
+    "animal_pkey" PRIMARY KEY, btree (id)
+
+zhokee=# CREATE index "animal name" on animal (name);
+CREATE INDEX
+zhokee=# \d animal
+                            Table "public.animal"
+ Column |  Type   | Collation | Nullable |              Default               
+--------+---------+-----------+----------+------------------------------------
+ id     | integer |           | not null | nextval('animal_id_seq'::regclass)
+ name   | text    |           |          | 
+ age    | integer |           |          | 5
+Indexes:
+    "animal_pkey" PRIMARY KEY, btree (id)
+    "animal name" btree (name)
+
+zhokee=# drop index "animal" name;
+ERROR:  syntax error at or near "name"
+LINE 1: drop index "animal" name;
+                            ^
+zhokee=# drop index "animal name";
+DROP INDEX
+zhokee=# drop index "animal_pkey";
+ERROR:  cannot drop index animal_pkey because constraint animal_pkey on table animal requires it
+HINT:  You can drop constraint animal_pkey on table animal instead.
+zhokee=# DROP TABLE animal;
+DROP TABLE
+zhokee=# CREATE TYPE age_type as ENUM ('молодой', 'взрослый');
+CREATE TYPE
+zhokee=# CREATE TABLE person(
+zhokee(# id serial primary key,
+zhokee(# name text not null,
+zhokee(# age int,
+zhokee(# age2 age_type
+zhokee(# );
+CREATE TABLE
+zhokee=# \dt
+          List of relations
+ Schema |  Name   | Type  |  Owner   
+--------+---------+-------+----------
+ public | person  | table | postgres
+ public | person2 | table | postgres
+(2 rows)
+
+zhokee=# INSERT INTO person(name, age, age2) VALUES ('John', 22, 'молодой');
+INSERT 0 1
+zhokee=# INSERT INTO person(name, age, age2) VALUES ('John', 22, 'взрослый');
+INSERT 0 1
+zhokee=# 
+zhokee=# INSERT INTO person(name, age, age2) VALUES ('John', 22, 'взрослый');
+INSERT 0 1
+zhokee=# 
+zhokee=# INSERT INTO person(name, age, age2) VALUES ('John', 22, 'взрослый');
+INSERT 0 1
+zhokee=# INSERT INTO person(name, age, age2) VALUES ('John', 22, 'молодой');
+INSERT 0 1
+zhokee=# \d person
+                             Table "public.person"
+ Column |   Type   | Collation | Nullable |               Default               
+--------+----------+-----------+----------+-------------------------------------
+ id     | integer  |           | not null | nextval('person_id_seq1'::regclass)
+ name   | text     |           | not null | 
+ age    | integer  |           |          | 
+ age2   | age_type |           |          | 
+Indexes:
+    "person_pkey1" PRIMARY KEY, btree (id)
+
+zhokee=# \d
+               List of relations
+ Schema |      Name      |   Type   |  Owner   
+--------+----------------+----------+----------
+ public | person         | table    | postgres
+ public | person2        | table    | postgres
+ public | person_id_seq  | sequence | postgres
+ public | person_id_seq1 | sequence | postgres
+(4 rows)
+
+zhokee=# DROP TABLE person;
+DROP TABLE
+zhokee=# CREATE TABLE product(
+zhokee(# id serial primary key,
+zhokee(# title text unique,
+zhokee(# price decimal,
+zhokee(# amount int default 1,
+zhokee(# product_type varchar(50) check(product_type in ('овощи', 'фрукты'))
+zhokee(# );
+CREATE TABLE
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product1', 20, 2, 'овощи');
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product2', 40, 2, 'овощи');
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product3', 50, 2, 'овощи');
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product4', 40, 2, 'овощи');
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product5', 70, 4, 'фрукты');
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product6', 80, 6, 'фрукты');
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product7', 90, 9, 'фрукты');
+INSERT 0 1
+zhokee=# INSERT INTO product(title, price, amount, product_type) VALUES ('product8', 30, 6, 'фрукты');
+INSERT 0 1
+zhokee=# SELECT * FROM product;
+ id |  title   | price | amount | product_type 
+----+----------+-------+--------+--------------
+  1 | product1 |    20 |      2 | овощи
+  2 | product2 |    40 |      2 | овощи
+  3 | product3 |    50 |      2 | овощи
+  4 | product4 |    40 |      2 | овощи
+  5 | product5 |    70 |      4 | фрукты
+  6 | product6 |    80 |      6 | фрукты
+  7 | product7 |    90 |      9 | фрукты
+  8 | product8 |    30 |      6 | фрукты
+(8 rows)
+
+zhokee=# SELECT TITLE , product_type, price * amount from product;
+  title   | product_type | ?column? 
+----------+--------------+----------
+ product1 | овощи        |       40
+ product2 | овощи        |       80
+ product3 | овощи        |      100
+ product4 | овощи        |       80
+ product5 | фрукты       |      280
+ product6 | фрукты       |      480
+ product7 | фрукты       |      810
+ product8 | фрукты       |      180
+(8 rows)
+
+zhokee=# select product_type, count(*) from product group by product_type;
+ product_type | count 
+--------------+-------
+ овощи        |     4
+ фрукты       |     4
+(2 rows)
+
+zhokee=# select product_type, count(*) from product group by product_type having count(*) > 6;
+ product_type | count 
+--------------+-------
+(0 rows)
+
+zhokee=# select product_type, count(*) from product group by product_type having count(*) > 2;
+ product_type | count 
+--------------+-------
+ овощи        |     4
+ фрукты       |     4
+(2 rows)
+
+zhokee=# SELECT avg(price) from product;
+         avg         
+---------------------
+ 52.5000000000000000
+(1 row)
+
+zhokee=# SELECT * FROM product where price > (select avg(price) from product;
+zhokee(# );
+ERROR:  syntax error at or near ";"
+LINE 1: ... FROM product where price > (select avg(price) from product;
+                                                                      ^
+zhokee=# SELECT * FROM product where price > (select avg(price) from product);
+ id |  title   | price | amount | product_type 
+----+----------+-------+--------+--------------
+  5 | product5 |    70 |      4 | фрукты
+  6 | product6 |    80 |      6 | фрукты
+  7 | product7 |    90 |      9 | фрукты
+(3 rows)
+
+zhokee=# SELECT sum(price) from product;
+ sum 
+-----
+ 420
+(1 row)
+
+zhokee=# SELECT min(price) from product;
+ min 
+-----
+  20
+(1 row)
+
+zhokee=# SELECT max(price) from product;
+ max 
+-----
+  90
+(1 row)
+
+zhokee=# SELECT max(price) from product_type;
+ERROR:  relation "product_type" does not exist
+LINE 1: SELECT max(price) from product_type;
+                               ^
+zhokee=# SELECT max(price) from *;
+ERROR:  syntax error at or near "*"
+LINE 1: SELECT max(price) from *;
+                               ^
+zhokee=# SELECT *from product where price = (select min(price) from product);
+ id |  title   | price | amount | product_type 
+----+----------+-------+--------+--------------
+  1 | product1 |    20 |      2 | овощи
+(1 row)
+
+zhokee=# CREATE DATABASE shakespeare;
+CREATE DATABASE
+zhokee=# \q
+user@zhokee-inspiron:~$ cd Загрузки
+user@zhokee-inspiron:~/Загрузки$ l
+ a_120383.mp3                                          document.docx                                                             'Sabrina_-_Boys_Boys_Boys_(musmore.com).mp3'
+ a_147377.mp3                                          erlan-andashev-ajylym.mp3                                                  sarkR2vvN27606.jpg
+ a_255219.mp3                                          extensions/                                                                shakespeare.sql
+ a_271463.mp3                                          extensions.zip                                                             Smartiqa_Workbook_Py.png
+ a_276909.mp3                                          flstudio_win_20.8.3.2304.exe*                                              sony-soram-sony-soram-mask-obifg.jpg
+ a_46231.mp3                                           fonts/                                                                     steve_rogers_avengers.jpg
+ a_73507.mp3                                           FontsNinja-0.1.35.exe                                                      tanosss-4e84-8f81-6c0e701f6a68.jpg
+ a_86231.mp3                                           fonts.zip                                                                 'Tatyana_Ovsienko_-_Dalnobojjshhik_(musmore.com).mp3'
+ a_86353.mp3                                           gulmajjram_razykova_-_ak_kuu_belen_kyrgyz-audio.com_.mp3                   TPass/
+ a_86597.mp3                                           JetBrainsMono-2.304/                                                       ulangasyr-kami---kyzyl-raushan.mp3
+ a_87207.mp3                                           JetBrainsMono-2.304.zip                                                    Vimix-cursors-master/
+ a_95083.mp3                                          'Joy — Touch By Touch.mp3'                                                  Vimix-cursors-master.zip
+ all-extensions-config/                                komorebi-2.1/                                                              wallpapers-pack.zip
+ all-extensions-config.zip                             komorebi-2.1-64-bit.deb                                                    WhiteSur-gtk-theme-master/
+ almaz-shaadaev-kөldүk-kyz.mp3                         komorebi-2.1.zip                                                           WhiteSur-gtk-theme-master.zip
+ anapiya-raiymbekova-syilasaly-zany-yr-2021-1.mp3      loki-4k_1627765495.jpg                                                    'Бумер - Не плачь.mp3'
+ arcmenu-config.zip                                    manual-customize-ubuntu-22.04-lts-01-pdf.zip                              'Бутырка - Запахло Весной (1).mp3'
+ AUTHORS.txt*                                          marvel-studios-legends-tv-series-season-1-2021-series-3440x1440-5883.jpg  'Бутырка - Запахло Весной.mp3'
+'[boominfo.ru] 3.1 Основные операторы'/                media-control-config.zip                                                  'Кыргызстан Обондору А.Д.Л. Раимбековалар.mp3'
+ conky-config/                                         media-controls-main/                                                      'Наталья Королёва - Жёлтые тюльпаны.mp3'
+ conky-config.zip                                      media-controls-main.zip                                                   'Наталья Королёва - Жёлтый чемоданчик.mp3'
+ control.tar.xz                                        mike-red-totoro-nuevo.jpg                                                 'Наталья Королёва - Маленькая страна.mp3'
+ CymaticsZodiacIIIBetaPackStemsandMIDIPt1-V1-u8b.zip   mylivewallpapers-com-Cyber-Demon.mp4                                      'Наталья Королёва - Синие лебеди.mp3'
+ CymaticsZodiacIIIBetaPack-V2-e5y.zip                  OFL.txt                                                                   'Олег Газманов - Эскадрон.mp3'
+ dash-to-panel-config.zip                              photo_2023-01-10_15-14-10.jpg                                             'Снимок экрана от 2022-12-28 15-54-34.txt'
+ data.tar.xz                                           Reversal-icon-theme-master/
+ debian-binary                                         Reversal-icon-theme-master.zip
+user@zhokee-inspiron:~/Загрузки$ psql shakespeare < shakespeare.sql
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "user" does not exist
+user@zhokee-inspiron:~/Загрузки$ sudo -u postgres psql shakespeare < shakespeare.sql
+[sudo] пароль для user: 
+could not change directory to "/home/user/Загрузки": Отказано в доступе
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE EXTENSION
+COMMENT
+SET
+SET
+SET
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+COPY 945
+COPY 1266
+COPY 1346
+COPY 35465
+COPY 28830
+COPY 43
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+ALTER TABLE
+REVOKE
+REVOKE
+GRANT
+GRANT
+user@zhokee-inspiron:~/Загрузки$ sudo -u postgres psql
+could not change directory to "/home/user/Загрузки": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# c zhokee
+postgres-# ;
+ERROR:  syntax error at or near "c"
+LINE 1: c zhokee
+        ^
+postgres=# \c zhokee
+You are now connected to database "zhokee" as user "postgres".
+zhokee=# \dt
+          List of relations
+ Schema |  Name   | Type  |  Owner   
+--------+---------+-------+----------
+ public | person2 | table | postgres
+ public | product | table | postgres
+(2 rows)
+
+zhokee=# \q
+user@zhokee-inspiron:~/Загрузки$ sudo -u postgres psql
+could not change directory to "/home/user/Загрузки": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# \dt
+           List of relations
+ Schema |   Name    | Type  |  Owner   
+--------+-----------+------http://127.0.0.1:5050-+----------
+ public | customers | table | postgres
+ public | products  | table | postgres
+(2 rows)
+
+postgres=# \c zhokee
+You are now connected to database "zhokee" as user "postgres".
+zhokee=# \dt
+          List of relations
+ Schema |  Name   | Type  |  Owner   
+--------+---------+-------+----------
+ public | person2 | table | postgres
+ public | product | table | postgres
+(2 rows)
+
+zhokee=# 
+

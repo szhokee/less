@@ -1,0 +1,404 @@
+user@zhokee-inspiron:~$ sudo -u postgres
+usage: sudo -h | -K | -k | -V
+usage: sudo -v [-ABknS] [-g group] [-h host] [-p prompt] [-u user]
+usage: sudo -l [-ABknS] [-g group] [-h host] [-p prompt] [-U user] [-u user] [command]
+usage: sudo [-ABbEHknPS] [-r role] [-t type] [-C num] [-D directory] [-g group] [-h host] [-p
+            prompt] [-R directory] [-T timeout] [-u user] [VAR=value] [-i|-s] [<command>]
+usage: sudo -e [-ABknS] [-r role] [-t type] [-C num] [-D directory] [-g group] [-h host] [-p
+            prompt] [-R directory] [-T timeout] [-u user] file ...
+user@zhokee-inspiron:~$ sudo -u postgres psql
+[sudo] пароль для user: 
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(4 rows)
+
+postgres=# CREATE DATABASE zholboldu;
+CREATE DATABASE
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+(5 rows)
+
+postgres=# \c zholboldu
+You are now connected to database "zholboldu" as user "postgres".
+zholboldu=# \dt
+Did not find any relations.
+zholboldu=# \c postgres
+You are now connected to database "postgres" as user "postgres".
+postgres=# \dt
+Did not find any relations.
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+(5 rows)
+
+postgres=# drop database zholboldu;
+DROP DATABASE
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(4 rows)
+
+postgres=# create database zholboldu;
+CREATE DATABASE
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+(5 rows)
+
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+
+postgres=# create user zholboldu with password '1';
+CREATE ROLE
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu |                                                            | {}
+
+postgres=# ALTER ROLE zholboldu WITH SUPERUSER;
+ALTER ROLE
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+postgres=# exit
+user@zhokee-inspiron:~$ sudo -u postgres psql
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# CREATE DATABASE zholboldu;
+ERROR:  database "zholboldu" already exists
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+(5 rows)
+
+postgres=# exit
+user@zhokee-inspiron:~$ psql zholboldu
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "user" does not exist
+user@zhokee-inspiron:~$ psql zhokee
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "user" does not exist
+user@zhokee-inspiron:~$ psql -U zhokee
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  Peer authentication failed for user "zhokee"
+user@zhokee-inspiron:~$ \c zholboldu
+c: команда не найдена
+user@zhokee-inspiron:~$ psql -U postgres
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  Peer authentication failed for user "postgres"
+user@zhokee-inspiron:~$ sudo -u postgres psql
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+(5 rows)
+
+postgres=# \c zholboldu
+You are now connected to database "zholboldu" as user "postgres".
+zholboldu=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+(5 rows)
+
+zholboldu=# GRAND ALL PRIVILEGES ON DATABASE zholboldu to zholboldu;
+ERROR:  syntax error at or near "GRAND"
+LINE 1: GRAND ALL PRIVILEGES ON DATABASE zholboldu to zholboldu;
+        ^
+zholboldu=# GRANT ALL PRIVILEGES ON DATABASE zholboldu to zholboldu;
+GRANT
+zholboldu=# 
+zholboldu=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges    
+-----------+----------+----------+-------------+-------------+------------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee            +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/postgres          +
+           |          |          |             |             | postgres=CTc/postgres +
+           |          |          |             |             | zholboldu=CTc/postgres
+(5 rows)
+
+zholboldu=# exit
+user@zhokee-inspiron:~$ sudo -u zholboldu psql
+sudo: unknown user zholboldu
+sudo: error initializing audit plugin sudoers_audit
+user@zhokee-inspiron:~$ sudo -u postgres psql
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# \c zholboldu
+You are now connected to database "zholboldu" as user "postgres".
+zholboldu=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges    
+-----------+----------+----------+-------------+-------------+------------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee            +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/postgres          +
+           |          |          |             |             | postgres=CTc/postgres +
+           |          |          |             |             | zholboldu=CTc/postgres
+(5 rows)
+
+zholboldu=# CREATE DATABASE mu_db;
+CREATE DATABASE
+zholboldu=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges    
+-----------+----------+----------+-------------+-------------+------------------------
+ mu_db     | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee            +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/postgres          +
+           |          |          |             |             | postgres=CTc/postgres +
+           |          |          |             |             | zholboldu=CTc/postgres
+(6 rows)
+
+zholboldu=# CREATE DATABASE mu_db_test_user WITH OWNER zholboldu;
+CREATE DATABASE
+zholboldu=# \l
+                                      List of databases
+      Name       |   Owner   | Encoding |   Collate   |    Ctype    |   Access privileges    
+-----------------+-----------+----------+-------------+-------------+------------------------
+ mu_db           | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ mu_db_test_user | zholboldu | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres        | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0       | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+                 |           |          |             |             | postgres=CTc/postgres
+ template1       | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+                 |           |          |             |             | postgres=CTc/postgres
+ zhokee          | zhokee    | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee            +
+                 |           |          |             |             | zhokee=CTc/zhokee
+ zholboldu       | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/postgres          +
+                 |           |          |             |             | postgres=CTc/postgres +
+                 |           |          |             |             | zholboldu=CTc/postgres
+(7 rows)
+
+zholboldu=# DROP DATABASE mu_db;
+DROP DATABASE
+zholboldu=# \l
+                                      List of databases
+      Name       |   Owner   | Encoding |   Collate   |    Ctype    |   Access privileges    
+-----------------+-----------+----------+-------------+-------------+------------------------
+ mu_db_test_user | zholboldu | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres        | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0       | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+                 |           |          |             |             | postgres=CTc/postgres
+ template1       | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+                 |           |          |             |             | postgres=CTc/postgres
+ zhokee          | zhokee    | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee            +
+                 |           |          |             |             | zhokee=CTc/zhokee
+ zholboldu       | postgres  | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/postgres          +
+                 |           |          |             |             | postgres=CTc/postgres +
+                 |           |          |             |             | zholboldu=CTc/postgres
+(6 rows)
+
+zholboldu=# DROP DATABASE mu_db_test_user;
+DROP DATABASE
+zholboldu=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges    
+-----------+----------+----------+-------------+-------------+------------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres           +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee            +
+           |          |          |             |             | zhokee=CTc/zhokee
+ zholboldu | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/postgres          +
+           |          |          |             |             | postgres=CTc/postgres +
+           |          |          |             |             | zholboldu=CTc/postgres
+(5 rows)
+
+zholboldu=# \c postgres
+You are now connected to database "postgres" as user "postgres".
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+postgres=# DROP DATABASE zholboldu;
+DROP DATABASE
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(4 rows)
+
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+postgres=# CREATE my_user WITH PASSWORD '1';
+ERROR:  syntax error at or near "my_user"
+LINE 1: CREATE my_user WITH PASSWORD '1';
+               ^
+postgres=# CREATE user my_user WITH PASSWORD '1';
+CREATE ROLE
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ my_user   |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(4 rows)
+
+postgres=# CREATE DATABASE my_user;
+CREATE DATABASE
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ my_user   | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(5 rows)
+
+postgres=# exit
+user@zhokee-inspiron:~$ psql -U my_user
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  Peer authentication failed for user "my_user"
+user@zhokee-inspiron:~$ sudo psql -U my_user
+[sudo] пароль для user: 
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  Peer authentication failed for user "my_user"
+user@zhokee-inspiron:~$ sudo -u my_user psql
+sudo: unknown user my_user
+sudo: error initializing audit plugin sudoers_audit
+user@zhokee-inspiron:~$ 

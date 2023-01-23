@@ -1,0 +1,890 @@
+user@zhokee-inspiron:~$ sudo -u postgres psql
+[sudo] пароль для user: 
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# ]q
+postgres-# \q
+user@zhokee-inspiron:~$ sudo -u zhokee psql
+sudo: unknown user zhokee
+sudo: error initializing audit plugin sudoers_audit
+user@zhokee-inspiron:~$ sudo -u postgres psql
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# \l
+postgres=# \c zhokee
+You are now connected to database "zhokee" as user "postgres".
+zhokee=# \dt
+Did not find any relations.
+zhokee=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ my_user   |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+zhokee=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ my_user   | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(5 rows)
+
+zhokee=# \dt
+Did not find any relations.
+zhokee=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ my_user   |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+zhokee=# CREATE TABLE person(
+zhokee(# id serial primary key,
+zhokee(# name varchar(50) unique,
+zhokee(# last_name text,
+zhokee(# age int not null,
+zhokee(# gender char(1),
+zhokee(# CONSTRAINT chek_gender CHEK(gender in ('M', 'W'));
+zhokee(# );
+ERROR:  syntax error at or near "CHEK"
+LINE 7: CONSTRAINT chek_gender CHEK(gender in ('M', 'W'));
+                               ^
+zhokee=# CREATE TABLE person(
+id serial primary key,
+name varchar(50) unique,
+last_name text,
+age int not null,
+gender char(1),
+CONSTRAINT chek_gender CHECK(gender in ('M', 'W'));
+);
+ERROR:  syntax error at or near ";"
+LINE 7: CONSTRAINT chek_gender CHECK(gender in ('M', 'W'));
+                                                          ^
+zhokee=# CREATE TABLE person(
+id serial primary key,
+name varchar(50) unique,
+last_name text,
+age int not null,
+gender char(1),
+CONSTRAINT chek_gender CHECK(gender in ('M', 'W')) 
+);
+CREATE TABLE
+zhokee=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | person | table | postgres
+(1 row)
+
+zhokee=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ my_user   |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+zhokee=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   
+-----------+----------+----------+-------------+-------------+-----------------------
+ my_user   | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ postgres  | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | 
+ template0 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ zhokee    | zhokee   | UTF8     | ru_RU.UTF-8 | ru_RU.UTF-8 | =Tc/zhokee           +
+           |          |          |             |             | zhokee=CTc/zhokee
+(5 rows)
+
+zhokee=# \d person
+                                     Table "public.person"
+  Column   |         Type          | Collation | Nullable |              Default               
+-----------+-----------------------+-----------+----------+------------------------------------
+ id        | integer               |           | not null | nextval('person_id_seq'::regclass)
+ name      | character varying(50) |           |          | 
+ last_name | text                  |           |          | 
+ age       | integer               |           | not null | 
+ gender    | character(1)          |           |          | 
+Indexes:
+    "person_pkey" PRIMARY KEY, btree (id)
+    "person_name_key" UNIQUE CONSTRAINT, btree (name)
+Check constraints:
+    "chek_gender" CHECK (gender = ANY (ARRAY['M'::bpchar, 'W'::bpchar]))
+
+zhokee=# SELECT * from person
+zhokee-# ;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# INSERT;
+ERROR:  syntax error at or near ";"
+LINE 1: INSERT;
+              ^
+zhokee=# INSERT
+zhokee-# ;
+ERROR:  syntax error at or near ";"
+LINE 2: ;
+        ^
+zhokee=# INSERT INTO person (name, age, gender) VALUES ('John', 22, 'M');
+INSERT 0 1
+zhokee=# INSERT INTO person (name, age, gender) VALUES ('Sam', 32, 'M'), ('Alic', 21, 'W'), ('Markiz', 34, 'W'), ('Martin', 25, 'M');
+INSERT 0 4
+zhokee=# \dt
+         List of relations
+ Schema |  Name  | Type  |  Owner   
+--------+--------+-------+----------
+ public | person | table | postgres
+(1 row)
+
+zhokee=# SELECT * from person;                                
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  2 | Sam    |           |  32 | M
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+(5 rows)
+
+zhokee=# SELECT name from person;
+  name  
+--------
+ John
+ Sam
+ Alic
+ Markiz
+ Martin
+(5 rows)
+
+zhokee=# SELECT name3 from person;
+ERROR:  column "name3" does not exist
+LINE 1: SELECT name3 from person;
+               ^
+HINT:  Perhaps you meant to reference the column "person.name".
+zhokee=# SELECT name, gender from person;
+  name  | gender 
+--------+--------
+ John   | M
+ Sam    | M
+ Alic   | W
+ Markiz | W
+ Martin | M
+(5 rows)
+
+zhokee=# SELECT name, name, id from person;
+  name  |  name  | id 
+--------+--------+----
+ John   | John   |  1
+ Sam    | Sam    |  2
+ Alic   | Alic   |  3
+ Markiz | Markiz |  4
+ Martin | Martin |  5
+(5 rows)
+
+zhokee=# SELECT name from person;
+  name  
+--------
+ John
+ Sam
+ Alic
+ Markiz
+ Martin
+(5 rows)
+
+zhokee=# SELECT name as "user_name" from person; 
+ user_name 
+-----------
+ John
+ Sam
+ Alic
+ Markiz
+ Martin
+(5 rows)
+
+zhokee=# SELECT id, gender from person;
+ id | gender 
+----+--------
+  1 | M
+  2 | M
+  3 | W
+  4 | W
+  5 | M
+(5 rows)
+
+zhokee=# SELECT gender as "pol" from person; 
+ pol 
+-----
+ M
+ M
+ W
+ W
+ M
+(5 rows)
+
+zhokee=# SELECT id, pol from person;
+ERROR:  column "pol" does not exist
+LINE 1: SELECT id, pol from person;
+                   ^
+zhokee=# SELECT id, gender as "pol" from person;
+ id | pol 
+----+-----
+  1 | M
+  2 | M
+  3 | W
+  4 | W
+  5 | M
+(5 rows)
+
+zhokee=# \d
+              List of relations
+ Schema |     Name      |   Type   |  Owner   
+--------+---------------+----------+----------
+ public | person        | table    | postgres
+ public | person_id_seq | sequence | postgres
+(2 rows)
+
+zhokee=# SELECT id || '----' || name from person;
+  ?column?   
+-------------
+ 1----John
+ 2----Sam
+ 3----Alic
+ 4----Markiz
+ 5----Martin
+(5 rows)
+
+zhokee=# SELECT id || '----' || name as "id + name" from person;
+  id + name  
+-------------
+ 1----John
+ 2----Sam
+ 3----Alic
+ 4----Markiz
+ 5----Martin
+(5 rows)
+
+zhokee=# SELECT name, age * id from person;
+  name  | ?column? 
+--------+----------
+ John   |       22
+ Sam    |       64
+ Alic   |       63
+ Markiz |      136
+ Martin |      125
+(5 rows)
+
+zhokee=# SELECT name, age < id from person;
+  name  | ?column? 
+--------+----------
+ John   | f
+ Sam    | f
+ Alic   | f
+ Markiz | f
+ Martin | f
+(5 rows)
+
+zhokee=# SELECT name, age > id from person;
+  name  | ?column? 
+--------+----------
+ John   | t
+ Sam    | t
+ Alic   | t
+ Markiz | t
+ Martin | t
+(5 rows)
+
+zhokee=# SELECT *from person;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  2 | Sam    |           |  32 | M
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+(5 rows)
+
+zhokee=# SELECT * from person limit 3;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+  2 | Sam  |           |  32 | M
+  3 | Alic |           |  21 | W
+(3 rows)
+
+zhokee=# SELECT * from person limit 3 offset 2;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+(3 rows)
+
+zhokee=# SELECT DISTINCT age from person;
+ age 
+-----
+  22
+  21
+  34
+  32
+  25
+(5 rows)
+
+zhokee=# SELECT * from person WHERE id == 1;
+ERROR:  operator does not exist: integer == integer
+LINE 1: SELECT * from person WHERE id == 1;
+                                      ^
+HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+zhokee=# SELECT * from person WHERE id = 1;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+(1 row)
+
+zhokee=# SELECT * from person WHERE id = 4;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  4 | Markiz |           |  34 | W
+(1 row)
+
+zhokee=# SELECT * from person WHERE age = 22;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+(1 row)
+
+zhokee=# SELECT name, age from person WHERE age = 22;
+ name | age 
+------+-----
+ John |  22
+(1 row)
+
+zhokee=# SELECT name, age as "AGE" from person WHERE age = 22;
+ name | AGE 
+------+-----
+ John |  22
+(1 row)
+
+zhokee=# SELECT * from person WHERE age > 22;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  2 | Sam    |           |  32 | M
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+(3 rows)
+
+zhokee=# SELECT * from person WHERE age is null;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE last_name is null;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  2 | Sam    |           |  32 | M
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+(5 rows)
+
+zhokee=# SELECT * from person WHERE last_name is not null;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE age = 22 and id > 5;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE age = 22 and id > 3;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE age = 22 or id > 3;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+(3 rows)
+
+zhokee=# SELECT * from person WHERE not age > 22;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+  3 | Alic |           |  21 | W
+(2 rows)
+
+zhokee=# SELECT * from person WHERE name in ('John', 'Sam');
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+  2 | Sam  |           |  32 | M
+(2 rows)
+
+zhokee=# SELECT * from person WHERE name like 'J';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE name like 'John';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+(1 row)
+
+zhokee=# SELECT * from person WHERE name like 'J%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+(1 row)
+
+zhokee=# SELECT * from person WHERE name like 'A%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  3 | Alic |           |  21 | W
+(1 row)
+
+zhokee=# SELECT * from person WHERE name like 'R%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE name like 'j%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE name like '%z';
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  4 | Markiz |           |  34 | W
+(1 row)
+
+zhokee=# SELECT * from person WHERE name like '%Z';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE name like 'S_m%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  2 | Sam  |           |  32 | M
+(1 row)
+
+zhokee=# SELECT * from person WHERE name like 'M_z%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE name like 'M%z%';
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  4 | Markiz |           |  34 | W
+(1 row)
+
+zhokee=# SELECT * from person WHERE name like 'M_z%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# SELECT * from person WHERE name like 'J';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+(0 rows)
+
+zhokee=# INSERT INTO person (name, age, gender) values('sam', 22, 'M');
+INSERT 0 1
+zhokee=# SELECT * from person WHERE name like 'J%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+(1 row)
+
+zhokee=# SELECT * from person WHERE name like 'S%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  2 | Sam  |           |  32 | M
+(1 row)
+
+zhokee=# SELECT * from person WHERE name ilike 'S%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  2 | Sam  |           |  32 | M
+  6 | sam  |           |  22 | M
+(2 rows)
+
+zhokee=# SELECT * from person WHERE name ilike 'a%';
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  3 | Alic |           |  21 | W
+(1 row)
+
+zhokee=# SELECT * from person WHERE name ilike '%a%';
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  2 | Sam    |           |  32 | M
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+  6 | sam    |           |  22 | M
+(5 rows)
+
+zhokee=# SELECT * from person WHERE not age > 22;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+  3 | Alic |           |  21 | W
+  6 | sam  |           |  22 | M
+(3 rows)
+
+zhokee=# SELECT * from person WHERE age BETWEEN 22 and 24;
+ id | name | last_name | age | gender 
+----+------+-----------+-----+--------
+  1 | John |           |  22 | M
+  6 | sam  |           |  22 | M
+(2 rows)
+
+zhokee=# SELECT * from person WHERE age BETWEEN 22 and 27;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  5 | Martin |           |  25 | M
+  6 | sam    |           |  22 | M
+(3 rows)
+
+zhokee=# SELECT * from person WHERE age >= 22 and 27;
+ERROR:  argument of AND must be type boolean, not type integer
+LINE 1: SELECT * from person WHERE age >= 22 and 27;
+                                                 ^
+zhokee=# SELECT * from person order by age;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  3 | Alic   |           |  21 | W
+  1 | John   |           |  22 | M
+  6 | sam    |           |  22 | M
+  5 | Martin |           |  25 | M
+  2 | Sam    |           |  32 | M
+  4 | Markiz |           |  34 | W
+(6 rows)
+
+zhokee=# SELECT * from person order by name;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  3 | Alic   |           |  21 | W
+  1 | John   |           |  22 | M
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+  6 | sam    |           |  22 | M
+  2 | Sam    |           |  32 | M
+(6 rows)
+
+zhokee=# SELECT * from person order by name, age;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  3 | Alic   |           |  21 | W
+  1 | John   |           |  22 | M
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+  6 | sam    |           |  22 | M
+  2 | Sam    |           |  32 | M
+(6 rows)
+
+zhokee=# SELECT * from person order by name, age, asc;
+ERROR:  syntax error at or near "asc"
+LINE 1: SELECT * from person order by name, age, asc;
+                                                 ^
+zhokee=# SELECT * from person order by age asc;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  3 | Alic   |           |  21 | W
+  1 | John   |           |  22 | M
+  6 | sam    |           |  22 | M
+  5 | Martin |           |  25 | M
+  2 | Sam    |           |  32 | M
+  4 | Markiz |           |  34 | W
+(6 rows)
+
+zhokee=# SELECT * from person order by age desc;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  4 | Markiz |           |  34 | W
+  2 | Sam    |           |  32 | M
+  5 | Martin |           |  25 | M
+  1 | John   |           |  22 | M
+  6 | sam    |           |  22 | M
+  3 | Alic   |           |  21 | W
+(6 rows)
+
+zhokee=# SELECT * from person order by age desc limit 3;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  4 | Markiz |           |  34 | W
+  2 | Sam    |           |  32 | M
+  5 | Martin |           |  25 | M
+(3 rows)
+
+zhokee=# SELECT * from person order by name, age desc limit 3;
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  3 | Alic   |           |  21 | W
+  1 | John   |           |  22 | M
+  4 | Markiz |           |  34 | W
+(3 rows)
+
+zhokee=# SELECT name, age from person order by age desc limit 3;
+  name  | age 
+--------+-----
+ Markiz |  34
+ Sam    |  32
+ Martin |  25
+(3 rows)
+
+zhokee=# SELECT name, age from person order by age * mull_age desc limit 3;
+ERROR:  column "mull_age" does not exist
+LINE 1: SELECT name, age from person order by age * mull_age desc li...
+                                                    ^
+zhokee=# SELECT name, age, age * 2 - 5 + 3 as mull_age from person order by age desc limit 3;
+  name  | age | mull_age 
+--------+-----+----------
+ Markiz |  34 |       66
+ Sam    |  32 |       62
+ Martin |  25 |       48
+(3 rows)
+
+zhokee=# SELECT name, age, age * 2 - 5 + 3 as mull_age, age ^ 2 from person order by age desc limit 3;
+  name  | age | mull_age | ?column? 
+--------+-----+----------+----------
+ Markiz |  34 |       66 |     1156
+ Sam    |  32 |       62 |     1024
+ Martin |  25 |       48 |      625
+(3 rows)
+
+zhokee=# SELECT * from person WHERE age > (SELECT id from person WHERE id = 1);
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  2 | Sam    |           |  32 | M
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+  6 | sam    |           |  22 | M
+(6 rows)
+
+zhokee=# SELECT * from person WHERE age > (SELECT id from person WHERE id = 3);
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  2 | Sam    |           |  32 | M
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+  6 | sam    |           |  22 | M
+(6 rows)
+
+zhokee=# ALTER TABLE person RENAME TO person2;
+ALTER TABLE
+zhokee=# \dt
+          List of relations
+ Schema |  Name   | Type  |  Owner   
+--------+---------+-------+----------
+ public | person2 | table | postgres
+(1 row)
+
+zhokee=# ALTER TABLE person2 add COLUMN name2 text;
+ALTER TABLE
+zhokee=# SELECT * from person2; 
+ id |  name  | last_name | age | gender | name2 
+----+--------+-----------+-----+--------+-------
+  1 | John   |           |  22 | M      | 
+  2 | Sam    |           |  32 | M      | 
+  3 | Alic   |           |  21 | W      | 
+  4 | Markiz |           |  34 | W      | 
+  5 | Martin |           |  25 | M      | 
+  6 | sam    |           |  22 | M      | 
+(6 rows)
+
+zhokee=# ALTER TABLE person2 DROP COLUMN name2;
+ALTER TABLE
+zhokee=# SELECT * from person2; 
+ id |  name  | last_name | age | gender 
+----+--------+-----------+-----+--------
+  1 | John   |           |  22 | M
+  2 | Sam    |           |  32 | M
+  3 | Alic   |           |  21 | W
+  4 | Markiz |           |  34 | W
+  5 | Martin |           |  25 | M
+  6 | sam    |           |  22 | M
+(6 rows)
+
+zhokee=# ALTER TABLE person2 RENAME COLUMN last_name to sur_name;
+ALTER TABLE
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  1 | John   |          |  22 | M
+  2 | Sam    |          |  32 | M
+  3 | Alic   |          |  21 | W
+  4 | Markiz |          |  34 | W
+  5 | Martin |          |  25 | M
+  6 | sam    |          |  22 | M
+(6 rows)
+
+zhokee=# ALTER TABLE person2 ALTER COLUMN sur_name TYPE varchar(20);
+ALTER TABLE
+zhokee=# ALTER TABLE person2 ALTER COLUMN sur_name SET DEFAULT 'snow';
+ALTER TABLE
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  1 | John   |          |  22 | M
+  2 | Sam    |          |  32 | M
+  3 | Alic   |          |  21 | W
+  4 | Markiz |          |  34 | W
+  5 | Martin |          |  25 | M
+  6 | sam    |          |  22 | M
+(6 rows)
+
+zhokee=# ALTER TABLE person2 ADD CONSTRAINT check_age CHECK(age > 22);
+ERROR:  check constraint "check_age" of relation "person2" is violated by some row
+zhokee=# ALTER TABLE person2 ADD CONSTRAINT check_age CHECK(age > 2);
+ALTER TABLE
+zhokee=# \d person2
+                                    Table "public.person2"
+  Column  |         Type          | Collation | Nullable |              Default               
+----------+-----------------------+-----------+----------+------------------------------------
+ id       | integer               |           | not null | nextval('person_id_seq'::regclass)
+ name     | character varying(50) |           |          | 
+ sur_name | character varying(20) |           |          | 'snow'::character varying
+ age      | integer               |           | not null | 
+ gender   | character(1)          |           |          | 
+Indexes:
+    "person_pkey" PRIMARY KEY, btree (id)
+    "person_name_key" UNIQUE CONSTRAINT, btree (name)
+Check constraints:
+    "check_age" CHECK (age > 2)
+    "chek_gender" CHECK (gender = ANY (ARRAY['M'::bpchar, 'W'::bpchar]))
+
+zhokee=# UPDATE person2 SET sur_name = 'f';
+UPDATE 6
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  1 | John   | f        |  22 | M
+  2 | Sam    | f        |  32 | M
+  3 | Alic   | f        |  21 | W
+  4 | Markiz | f        |  34 | W
+  5 | Martin | f        |  25 | M
+  6 | sam    | f        |  22 | M
+(6 rows)
+
+zhokee=# UPDATE person2 SET sur_name = 'Snow' WHERE id = 1;
+UPDATE 1
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  2 | Sam    | f        |  32 | M
+  3 | Alic   | f        |  21 | W
+  4 | Markiz | f        |  34 | W
+  5 | Martin | f        |  25 | M
+  6 | sam    | f        |  22 | M
+  1 | John   | Snow     |  22 | M
+(6 rows)
+
+zhokee=# UPDATE person2 SET sur_name = 'Sanches' WHERE id = 3;
+UPDATE 1
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  2 | Sam    | f        |  32 | M
+  4 | Markiz | f        |  34 | W
+  5 | Martin | f        |  25 | M
+  6 | sam    | f        |  22 | M
+  1 | John   | Snow     |  22 | M
+  3 | Alic   | Sanches  |  21 | W
+(6 rows)
+
+zhokee=# UPDATE person2 SET sur_name = 'Qatar' WHERE id = 2;
+UPDATE 1
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  4 | Markiz | f        |  34 | W
+  5 | Martin | f        |  25 | M
+  6 | sam    | f        |  22 | M
+  1 | John   | Snow     |  22 | M
+  3 | Alic   | Sanches  |  21 | W
+  2 | Sam    | Qatar    |  32 | M
+(6 rows)
+
+zhokee=# UPDATE person2 SET age = age * 1 WHERE age > 22;
+UPDATE 3
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  6 | sam    | f        |  22 | M
+  1 | John   | Snow     |  22 | M
+  3 | Alic   | Sanches  |  21 | W
+  4 | Markiz | f        |  34 | W
+  5 | Martin | f        |  25 | M
+  2 | Sam    | Qatar    |  32 | M
+(6 rows)
+
+zhokee=# UPDATE person2 SET age = age + 1 WHERE age > 2;
+UPDATE 6
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  6 | sam    | f        |  23 | M
+  1 | John   | Snow     |  23 | M
+  3 | Alic   | Sanches  |  22 | W
+  4 | Markiz | f        |  35 | W
+  5 | Martin | f        |  26 | M
+  2 | Sam    | Qatar    |  33 | M
+(6 rows)
+
+zhokee=# DELETE FROM person2 WHERE id = 1;
+DELETE 1
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  6 | sam    | f        |  23 | M
+  3 | Alic   | Sanches  |  22 | W
+  4 | Markiz | f        |  35 | W
+  5 | Martin | f        |  26 | M
+  2 | Sam    | Qatar    |  33 | M
+(5 rows)
+
+zhokee=# DELETE FROM person2 WHERE age = 22;
+DELETE 1
+zhokee=# SELECT * from person2; 
+ id |  name  | sur_name | age | gender 
+----+--------+----------+-----+--------
+  6 | sam    | f        |  23 | M
+  4 | Markiz | f        |  35 | W
+  5 | Martin | f        |  26 | M
+  2 | Sam    | Qatar    |  33 | M
+(4 rows)
+
+zhokee=# 

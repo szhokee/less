@@ -1,0 +1,265 @@
+user@zhokee-inspiron:~$ sudo -u postgres psql
+[sudo] пароль для user: 
+could not change directory to "/home/user": Отказано в доступе
+psql (14.6 (Ubuntu 14.6-0ubuntu0.22.04.1))
+Type "help" for help.
+
+postgres=# ^[[200~CREATE TABLE customers
+postgres-# (
+postgres(#     Id SERIAL PRIMARY KEY,
+postgres(#     FirstName CHARACTER VARYING(30),
+postgres(#     LastName CHARACTER VARYING(30),
+postgres(#     Email CHARACTER VARYING(30),
+postgres(#     Age INTEGER
+postgres(# );
+ERROR:  syntax error at or near "
+INE 1: CREATE TABLE customers
+        ^
+postgres=# CREATE TABLE customers
+(
+    Id SERIAL PRIMARY KEY,
+    FirstName CHARACTER VARYING(30),
+    LastName CHARACTER VARYING(30),
+    Email CHARACTER VARYING(30),
+    Age INTEGER
+);
+CREATE TABLE
+postgres=# \dt
+           List of relations
+ Schema |   Name    | Type  |  Owner   
+--------+-----------+-------+----------
+ public | customers | table | postgres
+(1 row)
+
+postgres=# INSERT INTO Products VALUES (1, 'Galaxy S9', 'Samsung', 4, 63000)
+postgres-# ;
+ERROR:  relation "products" does not exist
+LINE 1: INSERT INTO Products VALUES (1, 'Galaxy S9', 'Samsung', 4, 6...
+                    ^
+postgres=# CREATE TABLE Products
+(
+    Id SERIAL PRIMARY KEY,
+    ProductName VARCHAR(30) NOT NULL,
+    Manufacturer VARCHAR(20) NOT NULL,
+    ProductCount INTEGER DEFAULT 0,
+    Price NUMERIC
+);
+CREATE TABLE
+postgres=# INSERT INTO Products VALUES (1, 'Galaxy S9', 'Samsung', 4, 63000)
+;
+INSERT 0 1
+postgres=# INSERT INTO Products (ProductName, Price, Manufacturer) 
+VALUES ('iPhone X', 71000, 'Apple');
+ERROR:  duplicate key value violates unique constraint "products_pkey"
+DETAIL:  Key (id)=(1) already exists.
+postgres=# INSERT INTO Products (ProductName, Price, Manufacturer) 
+VALUES ('iPhone X', 71000, 'Apple');
+INSERT 0 1
+postgres=# INSERT INTO Products  (ProductName, Manufacturer, ProductCount, Price)
+VALUES
+('iPhone 6', 'Apple', 3, 36000),
+('Galaxy S8', 'Samsung', 2, 46000),
+('Galaxy S8 Plus', 'Samsung', 1, 56000);
+INSERT 0 3
+postgres=# INSERT INTO Products 
+(ProductName, Manufacturer, ProductCount, Price) 
+VALUES('Desire 12', 'HTC', 8, 21000) RETURNING id;
+ id 
+----
+  6
+(1 row)
+
+INSERT 0 1
+postgres=# \dt
+           List of relations
+ Schema |   Name    | Type  |  Owner   
+--------+-----------+-------+----------
+ public | customers | table | postgres
+ public | products  | table | postgres
+(2 rows)
+
+postgres=# \du
+                                   List of roles
+ Role name |                         Attributes                         | Member of 
+-----------+------------------------------------------------------------+-----------
+ my_user   |                                                            | {}
+ postgres  | Superuser, Create role, Create DB, Replication, Bypass RLS | {}
+ zhokee    | Superuser, Create role, Create DB, Cannot login            | {}
+ zholboldu | Superuser                                                  | {}
+
+postgres=# SELECT * FROM Products;
+ id |  productname   | manufacturer | productcount | price 
+----+----------------+--------------+--------------+-------
+  1 | Galaxy S9      | Samsung      |            4 | 63000
+  2 | iPhone X       | Apple        |            0 | 71000
+  3 | iPhone 6       | Apple        |            3 | 36000
+  4 | Galaxy S8      | Samsung      |            2 | 46000
+  5 | Galaxy S8 Plus | Samsung      |            1 | 56000
+  6 | Desire 12      | HTC          |            8 | 21000
+(6 rows)
+
+postgres=# SELECT ProductName, Price FROM Products;
+  productname   | price 
+----------------+-------
+ Galaxy S9      | 63000
+ iPhone X       | 71000
+ iPhone 6       | 36000
+ Galaxy S8      | 46000
+ Galaxy S8 Plus | 56000
+ Desire 12      | 21000
+(6 rows)
+
+postgres=# SELECT ProductCount, Manufacturer, Price * ProductCount
+FROM Products;
+ productcount | manufacturer | ?column? 
+--------------+--------------+----------
+            4 | Samsung      |   252000
+            0 | Apple        |        0
+            3 | Apple        |   108000
+            2 | Samsung      |    92000
+            1 | Samsung      |    56000
+            8 | HTC          |   168000
+(6 rows)
+
+postgres=# SELECT ProductCount AS Title, 
+Manufacturer, 
+Price * ProductCount  AS TotalSum
+FROM Products;
+ title | manufacturer | totalsum 
+-------+--------------+----------
+     4 | Samsung      |   252000
+     0 | Apple        |        0
+     3 | Apple        |   108000
+     2 | Samsung      |    92000
+     1 | Samsung      |    56000
+     8 | HTC          |   168000
+(6 rows)
+
+postgres=# SELECT * FROM Products
+WHERE Manufacturer = 'Apple';
+ id | productname | manufacturer | productcount | price 
+----+-------------+--------------+--------------+-------
+  2 | iPhone X    | Apple        |            0 | 71000
+  3 | iPhone 6    | Apple        |            3 | 36000
+(2 rows)
+
+postgres=# SELECT * FROM Products
+WHERE Price < 39000;
+ id | productname | manufacturer | productcount | price 
+----+-------------+--------------+--------------+-------
+  3 | iPhone 6    | Apple        |            3 | 36000
+  6 | Desire 12   | HTC          |            8 | 21000
+(2 rows)
+
+postgres=# SELECT * FROM Products
+WHERE Price * ProductCount > 90000;
+ id | productname | manufacturer | productcount | price 
+----+-------------+--------------+--------------+-------
+  1 | Galaxy S9   | Samsung      |            4 | 63000
+  3 | iPhone 6    | Apple        |            3 | 36000
+  4 | Galaxy S8   | Samsung      |            2 | 46000
+  6 | Desire 12   | HTC          |            8 | 21000
+(4 rows)
+
+postgres=# SELECT * FROM Products
+WHERE Manufacturer = 'Samsung' AND Price > 50000;
+ id |  productname   | manufacturer | productcount | price 
+----+----------------+--------------+--------------+-------
+  1 | Galaxy S9      | Samsung      |            4 | 63000
+  5 | Galaxy S8 Plus | Samsung      |            1 | 56000
+(2 rows)
+
+postgres=# SELECT * FROM Products
+WHERE Manufacturer = 'Samsung' OR Price > 50000;
+ id |  productname   | manufacturer | productcount | price 
+----+----------------+--------------+--------------+-------
+  1 | Galaxy S9      | Samsung      |            4 | 63000
+  2 | iPhone X       | Apple        |            0 | 71000
+  4 | Galaxy S8      | Samsung      |            2 | 46000
+  5 | Galaxy S8 Plus | Samsung      |            1 | 56000
+(4 rows)
+
+postgres=# SELECT * FROM Products
+WHERE NOT Manufacturer = 'Samsung';
+ id | productname | manufacturer | productcount | price 
+----+-------------+--------------+--------------+-------
+  2 | iPhone X    | Apple        |            0 | 71000
+  3 | iPhone 6    | Apple        |            3 | 36000
+  6 | Desire 12   | HTC          |            8 | 21000
+(3 rows)
+
+postgres=# SELECT * FROM Products
+WHERE Manufacturer <> 'Samsung'
+postgres-# ;
+ id | productname | manufacturer | productcount | price 
+----+-------------+--------------+--------------+-------
+  2 | iPhone X    | Apple        |            0 | 71000
+  3 | iPhone 6    | Apple        |            3 | 36000
+  6 | Desire 12   | HTC          |            8 | 21000
+(3 rows)
+
+postgres=# SELECT * FROM Products
+WHERE Manufacturer = 'Samsung' OR Price > 30000 AND ProductCount > 2;
+ id |  productname   | manufacturer | productcount | price 
+----+----------------+--------------+--------------+-------
+  1 | Galaxy S9      | Samsung      |            4 | 63000
+  3 | iPhone 6       | Apple        |            3 | 36000
+  4 | Galaxy S8      | Samsung      |            2 | 46000
+  5 | Galaxy S8 Plus | Samsung      |            1 | 56000
+(4 rows)
+
+postgres=# SELECT * FROM Products
+WHERE (Manufacturer = 'Samsung' OR Price > 30000) AND ProductCount > 2;
+ id | productname | manufacturer | productcount | price 
+----+-------------+--------------+--------------+-------
+  1 | Galaxy S9   | Samsung      |            4 | 63000
+  3 | iPhone 6    | Apple        |            3 | 36000
+(2 rows)
+
+postgres=# SELECT * FROM Products
+WHERE ProductCount IS NULL;
+ id | productname | manufacturer | productcount | price 
+----+-------------+--------------+--------------+-------
+(0 rows)
+
+postgres=# SELECT * FROM Products
+WHERE ProductCount IS NOT NULL;
+ id |  productname   | manufacturer | productcount | price 
+----+----------------+--------------+--------------+-------
+  1 | Galaxy S9      | Samsung      |            4 | 63000
+  2 | iPhone X       | Apple        |            0 | 71000
+  3 | iPhone 6       | Apple        |            3 | 36000
+  4 | Galaxy S8      | Samsung      |            2 | 46000
+  5 | Galaxy S8 Plus | Samsung      |            1 | 56000
+  6 | Desire 12      | HTC          |            8 | 21000
+(6 rows)
+
+postgres=# UPDATE Products
+SET Price = Price + 3000;
+UPDATE 6
+postgres=# UPDATE Products
+SET Manufacturer = 'Samsung Inc.'
+WHERE Manufacturer = 'Samsung';
+UPDATE 3
+postgres=# UPDATE Products
+SET Manufacturer = 'Samsung',
+    ProductCount = ProductCount + 3
+WHERE Manufacturer = 'Samsung Inc.';
+UPDATE 3
+postgres=# DELETE FROM Products
+WHERE Manufacturer='Apple';
+DELETE 2
+postgres=# DELETE FROM Products
+WHERE Manufacturer='HTC' AND Price < 15000;
+DELETE 0
+postgres=# SELECT * FROM Products;
+ id |  productname   | manufacturer | productcount | price 
+----+----------------+--------------+--------------+-------
+  6 | Desire 12      | HTC          |            8 | 24000
+  1 | Galaxy S9      | Samsung      |            7 | 66000
+  4 | Galaxy S8      | Samsung      |            5 | 49000
+  5 | Galaxy S8 Plus | Samsung      |            4 | 59000
+(4 rows)
+
+postgres=# ^C
+postgres=# 
